@@ -1,5 +1,6 @@
 package com.dystopia.server
 
+import com.dystopia.executor.executorFactoryOf
 import com.dystopia.message.Messages
 
 import java.io.IOException
@@ -10,10 +11,13 @@ import java.util.logging.Logger
 class ServerTask(private val mySocket: Socket) : Runnable {
 
     override fun run() {
-        try {
-            Messages.Task.parseDelimitedFrom(mySocket.getInputStream())
-        } catch (e: IOException) {
-            LOG.log(Level.WARNING, e.message)
+        mySocket.use {
+            try {
+                val task = Messages.Task.parseDelimitedFrom(mySocket.getInputStream())
+                executorFactoryOf(task).instanceOfExecutor().execute()
+            } catch (e: IOException) {
+                LOG.log(Level.WARNING, e.message)
+            }
         }
 
     }
