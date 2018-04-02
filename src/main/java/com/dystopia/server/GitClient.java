@@ -11,7 +11,7 @@ public class GitClient {
     public static void main(String[] args) {
         try {
             TaskExecutor taskExecutor = ArgumentsParser.parse(args);
-            taskExecutor.run();
+            taskExecutor.execute();
         } catch (IllegalArgumentException e) {
             LOGGER.log(Level.SEVERE, "Exception occurred while parsing arguments", e);
         }

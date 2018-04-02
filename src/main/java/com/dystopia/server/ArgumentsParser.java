@@ -8,6 +8,9 @@ import java.nio.file.Paths;
 
 public final class ArgumentsParser {
     private static final String USAGE = "Usage: <action> <file_name> [commit_message]";
+    private static final int ACTION = 0;
+    private static final int FILE = 1;
+    private static final int COMMIT_MESSAGE = 2;
 
     private ArgumentsParser() {
 
@@ -18,11 +21,11 @@ public final class ArgumentsParser {
             throw new IllegalArgumentException(USAGE);
         }
 
-        Path path = Paths.get(args[1]);
+        Path path = Paths.get(args[FILE]);
         if (!Files.isRegularFile(path)) {
-            throw new IllegalArgumentException("File " + args[1] + " does not exists");
+            throw new IllegalArgumentException("File " + args[FILE] + " does not exists");
         }
-        switch (args[0]) {
+        switch (args[ACTION]) {
             case "stop": {
                 return new StopExecutor(path);
             }
@@ -30,10 +33,10 @@ public final class ArgumentsParser {
                 return new StartExecutor(path);
             }
             case "push": {
-                if (args.length < 3 || args[2].isEmpty()) {
+                if (args.length < 3 || args[COMMIT_MESSAGE].isEmpty()) {
                     throw new IllegalArgumentException(USAGE);
                 }
-                return new PushExecutor(path, args[2]);
+                return new PushExecutor(path, args[COMMIT_MESSAGE]);
             }
             case "pull": {
                 return new PullExecutor(path);

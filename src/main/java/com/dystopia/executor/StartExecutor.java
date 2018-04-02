@@ -1,5 +1,6 @@
 package com.dystopia.executor;
 
+import com.dystopia.Definition.TaskDefinition;
 import com.dystopia.git.GitUtil;
 import com.dystopia.server.GitClient;
 
@@ -7,14 +8,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Level;
 
-public class StartExecutor extends TaskExecutor {
+public class StartExecutor implements TaskExecutor, TaskDefinition {
+    private final Path file;
 
     public StartExecutor(Path file) {
-        super(file);
+        this.file = file;
     }
 
     @Override
-    public void run() {
+    public void execute() {
         try {
             GitUtil.executeUnderPath(file, "add", file.toAbsolutePath().toString());
             GitUtil.executeUnderPath(file, "commit", "-m", "it's needed for implementation");
@@ -24,5 +26,10 @@ public class StartExecutor extends TaskExecutor {
         } catch (IOException | InterruptedException e) {
             GitClient.LOGGER.log(Level.SEVERE, "Exception occurred while initializing the git client", e);
         }
+    }
+
+    @Override
+    public TaskExecutor executor() {
+        return this;
     }
 }

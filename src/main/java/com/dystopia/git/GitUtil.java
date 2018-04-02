@@ -1,6 +1,5 @@
 package com.dystopia.git;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,6 +21,7 @@ public final class GitUtil {
     public static int execute(Path directory, String... command) throws IOException, InterruptedException {
         String[] gitCommand = new String[command.length + 1];
         System.arraycopy(command, 0, gitCommand, 1, command.length);
+        gitCommand[0] = "git";
         return new ProcessBuilder(gitCommand).
                 directory(directory.toFile()).
                 inheritIO().start().waitFor();
