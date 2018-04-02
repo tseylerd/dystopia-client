@@ -2,9 +2,11 @@ package com.dystopia.executor;
 
 import com.dystopia.git.CommandLineExecutor;
 import com.dystopia.git.GitUtil;
+import com.dystopia.server.DystopiaClient;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.logging.Level;
 
 public class PullExecutor extends TaskExecutor {
     public PullExecutor(Path file) {
@@ -19,7 +21,7 @@ public class PullExecutor extends TaskExecutor {
             CommandLineExecutor.execute(file.getParent().toFile(), "git", "checkout", "origin/master",
                     file.toAbsolutePath().toString());
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            DystopiaClient.LOGGER.log(Level.SEVERE, "Exception occurred while pulling from origin/master", e);
         }
     }
 }

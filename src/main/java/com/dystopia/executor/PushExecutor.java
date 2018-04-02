@@ -2,10 +2,12 @@ package com.dystopia.executor;
 
 import com.dystopia.git.CommandLineExecutor;
 import com.dystopia.git.GitUtil;
+import com.dystopia.server.DystopiaClient;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.logging.Level;
 
 public class PushExecutor extends TaskExecutor {
     private final String commitMessage;
@@ -26,7 +28,7 @@ public class PushExecutor extends TaskExecutor {
             CommandLineExecutor.execute(parent, "git", "commit", "-m", commitMessage);
             CommandLineExecutor.execute(parent, "git", "push", "origin", "sketch_branch:master");
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            DystopiaClient.LOGGER.log(Level.SEVERE, "Exception occurred while pushing " + file.getFileName(), e);
         }
     }
 }
