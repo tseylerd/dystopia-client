@@ -1,6 +1,5 @@
 package com.dystopia.executor;
 
-import com.dystopia.git.CommandLineExecutor;
 import com.dystopia.git.GitUtil;
 import com.dystopia.server.DystopiaClient;
 
@@ -21,11 +20,11 @@ public class StopExecutor extends TaskExecutor {
     public void run() {
         GitUtil.ensureUnderGit(file);
         try {
-            CommandLineExecutor.execute(parent, "git", "checkout", "master");
-            CommandLineExecutor.execute(parent, "git", "stash", "apply");
-            CommandLineExecutor.execute(parent, "git", "reset", "--soft", "HEAD~1");
-            CommandLineExecutor.execute(parent, "git", "checkout", "sketch_branch", file.toAbsolutePath().toString());
-            CommandLineExecutor.execute(parent, "git", "branch", "-fd", "sketch_branch");
+            GitUtil.execute(parent, "git", "checkout", "master");
+            GitUtil.execute(parent, "git", "stash", "apply");
+            GitUtil.execute(parent, "git", "reset", "--soft", "HEAD~1");
+            GitUtil.execute(parent, "git", "checkout", "sketch_branch", file.toAbsolutePath().toString());
+            GitUtil.execute(parent, "git", "branch", "-fd", "sketch_branch");
         } catch (IOException | InterruptedException e) {
             DystopiaClient.LOGGER.log(Level.SEVERE, "Exception occurred while finalizing the git client", e);
         }

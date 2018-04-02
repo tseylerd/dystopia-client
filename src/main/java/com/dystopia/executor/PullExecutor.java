@@ -1,6 +1,5 @@
 package com.dystopia.executor;
 
-import com.dystopia.git.CommandLineExecutor;
 import com.dystopia.git.GitUtil;
 import com.dystopia.server.DystopiaClient;
 
@@ -17,8 +16,8 @@ public class PullExecutor extends TaskExecutor {
     public void run() {
         GitUtil.ensureUnderGit(file);
         try {
-            CommandLineExecutor.execute(file.getParent().toFile(), "git", "fetch");
-            CommandLineExecutor.execute(file.getParent().toFile(), "git", "checkout", "origin/master",
+            GitUtil.execute(file.getParent().toFile(), "git", "fetch");
+            GitUtil.execute(file.getParent().toFile(), "git", "checkout", "origin/master",
                     file.toAbsolutePath().toString());
         } catch (IOException | InterruptedException e) {
             DystopiaClient.LOGGER.log(Level.SEVERE, "Exception occurred while pulling from origin/master", e);

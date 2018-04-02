@@ -1,6 +1,5 @@
 package com.dystopia.executor;
 
-import com.dystopia.git.CommandLineExecutor;
 import com.dystopia.git.GitUtil;
 import com.dystopia.server.DystopiaClient;
 
@@ -23,10 +22,10 @@ public class PushExecutor extends TaskExecutor {
     public void run() {
         GitUtil.ensureUnderGit(file);
         try {
-            CommandLineExecutor.execute(parent, "git", "fetch");
-            CommandLineExecutor.execute(parent, "git", "add", file.toAbsolutePath().toString());
-            CommandLineExecutor.execute(parent, "git", "commit", "-m", commitMessage);
-            CommandLineExecutor.execute(parent, "git", "push", "origin", "sketch_branch:master");
+            GitUtil.execute(parent, "git", "fetch");
+            GitUtil.execute(parent, "git", "add", file.toAbsolutePath().toString());
+            GitUtil.execute(parent, "git", "commit", "-m", commitMessage);
+            GitUtil.execute(parent, "git", "push", "origin", "sketch_branch:master");
         } catch (IOException | InterruptedException e) {
             DystopiaClient.LOGGER.log(Level.SEVERE, "Exception occurred while pushing " + file.getFileName(), e);
         }
