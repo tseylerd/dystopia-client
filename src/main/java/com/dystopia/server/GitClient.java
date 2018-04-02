@@ -5,8 +5,9 @@ import com.dystopia.executor.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DystopiaClient {
-    public static final Logger LOGGER = Logger.getLogger("dystopia-client");
+public class GitClient {
+    public static final Logger LOGGER = Logger.getLogger("GitClient");
+
     public static void main(String[] args) {
         try {
             TaskExecutor taskExecutor = ArgumentsParser.parse(args);

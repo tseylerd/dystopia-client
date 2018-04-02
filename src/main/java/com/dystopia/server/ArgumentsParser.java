@@ -6,8 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class ArgumentsParser {
+public final class ArgumentsParser {
     private static final String USAGE = "Usage: <action> <file_name> [commit_message]";
+
+    private ArgumentsParser() {
+
+    }
 
     public static TaskExecutor parse(String[] args) throws IllegalArgumentException {
         if (args.length < 2) {

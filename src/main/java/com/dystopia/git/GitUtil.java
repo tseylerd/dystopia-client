@@ -19,9 +19,15 @@ public final class GitUtil {
         }
     }
 
-    public static int execute(File directory, String... command) throws IOException, InterruptedException {
-        return new ProcessBuilder(command).
-                directory(directory).
+    public static int execute(Path directory, String... command) throws IOException, InterruptedException {
+        String[] gitCommand = new String[command.length + 1];
+        System.arraycopy(command, 0, gitCommand, 1, command.length);
+        return new ProcessBuilder(gitCommand).
+                directory(directory.toFile()).
                 inheritIO().start().waitFor();
+    }
+
+    public static int executeUnderPath(Path file, String... command) throws IOException, InterruptedException {
+        return execute(file.getParent(), command);
     }
 }
