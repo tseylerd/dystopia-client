@@ -1,10 +1,10 @@
 package com.dystopia.executor;
 
 import com.dystopia.git.CommandLineExecutor;
+import com.dystopia.git.GitUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class StopExecutor extends TaskExecutor {
@@ -17,10 +17,7 @@ public class StopExecutor extends TaskExecutor {
 
     @Override
     public void run() {
-        if (!Files.isDirectory(file.resolveSibling(".git"))) {
-            System.err.println("No git repo here");
-            return;
-        }
+        GitUtil.ensureUnderGit(file);
         try {
             CommandLineExecutor.execute(parent, "git", "checkout", "master");
             CommandLineExecutor.execute(parent, "git", "stash", "apply");
