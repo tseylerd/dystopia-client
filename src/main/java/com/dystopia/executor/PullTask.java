@@ -19,10 +19,10 @@ public class PullTask implements TaskExecutor, TaskDefinition {
     public void execute() {
         GitUtil.ensureUnderGit(file);
         try {
-            GitClient.LOGGER.log(Level.SEVERE, "fetch");
+            GitClient.LOGGER.log(Level.SEVERE, "fetching");
             GitUtil.executeUnderPathOrExit(file, "fetch");
-            GitClient.LOGGER.log(Level.SEVERE, "merge");
-            GitUtil.executeUnderPathOrExit(file, "merge", "origin/master");
+            GitClient.LOGGER.log(Level.SEVERE, "merging");
+            GitUtil.executeUnderPathOrExit(file, "merge");
         } catch (Throwable e) {
             GitClient.LOGGER.log(Level.SEVERE, "Exception occurred while pulling from origin/master: %s", e.toString());
             GitClient.LOGGER.log(Level.SEVERE, e.getMessage());

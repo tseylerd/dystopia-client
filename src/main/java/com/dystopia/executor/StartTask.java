@@ -1,5 +1,6 @@
 package com.dystopia.executor;
 
+import com.dystopia.Util;
 import com.dystopia.definition.TaskDefinition;
 import com.dystopia.git.GitUtil;
 import com.dystopia.server.GitClient;
@@ -10,6 +11,7 @@ import java.nio.file.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 public class StartTask implements TaskExecutor, TaskDefinition {
@@ -22,47 +24,35 @@ public class StartTask implements TaskExecutor, TaskDefinition {
   @Override
   public void execute() {
     try {
-      Path config = file.resolveSibling(".git").resolve("config");
-      List<String> strings = Files.exists(config) ? Files.readAllLines(config) : Collections.emptyList();
-      if (strings.stream().noneMatch(s -> s.contains("dystopia"))) {
-        URL location = StartTask.class.getProtectionDomain().getCodeSource().getLocation();
-        String path = location.getPath();
-        Path myPath = Paths.get(path);
-
-        Path driverRunnerPath = myPath.resolveSibling("run-driver.sh");
-
+      Path gitDirectory = file.resolveSibling(".git");
+      copyAndModify(gitDirectory, "config", path -> {
+        Path currentJarPath = Util.getContainingPath();
+        Path driverRunnerPath = currentJarPath.resolveSibling("run-driver.sh");
         Files.write(
-          config,
+          path,
           Arrays.asList(
             "",
-            "[merge \"dystopia-driver\"]",
-            "\tname = dystopia-driver",
+            "[merge \"dystopia\"]",
+            "\tname = dystopia",
             "\tdriver = /bin/sh '" + driverRunnerPath.toFile().getPath() + "' %O %A %B"
           ),
           StandardOpenOption.APPEND,
           StandardOpenOption.CREATE,
           StandardOpenOption.WRITE
         );
-      }
+      });
 
-      Path attributes = file.resolveSibling(".gitattributes");
-      strings = Files.exists(attributes) ? Files.readAllLines(attributes) : Collections.emptyList();
-
-      if (strings.stream().noneMatch(s -> s.contains("dystopia"))) {
+      copyAndModify(file, ".gitattributes", path -> {
         Files.write(
-          attributes,
-          Collections.singletonList("*.sketch merge=dystopia-driver"),
+          path,
+          Collections.singletonList("*.sketch merge=dystopia"),
           StandardOpenOption.APPEND,
           StandardOpenOption.CREATE,
           StandardOpenOption.WRITE
         );
-      }
+      });
 
       GitUtil.executeUnderPathOrExit(file, "add", file.toAbsolutePath().toString());
-      GitUtil.executeUnderPathOrExit(file, "commit", "--allow-empty", "-m", "it's needed for implementation");
-      GitUtil.executeUnderPathOrExit(file, "stash");
-      GitUtil.executeUnderPathOrExit(file, "checkout", "-b", "sketch_branch", "origin/master");
-      GitUtil.executeUnderPathOrExit(file, "checkout", "master", file.toAbsolutePath().toString());
     } catch (IOException | InterruptedException e) {
       GitClient.LOGGER.log(Level.SEVERE, "Exception occurred while initializing the git client: %s", e.toString());
     }
@@ -71,5 +61,22 @@ public class StartTask implements TaskExecutor, TaskDefinition {
   @Override
   public TaskExecutor executor() {
     return this;
+  }
+
+  private void copyAndModify(Path rootPath, String fileName, FileOperation operation) throws IOException {
+    Path file = rootPath.resolve(fileName);
+    boolean exists = Files.exists(file);
+    List<String> strings = exists ? Files.readAllLines(file) : Collections.emptyList();
+    if (strings.stream().noneMatch(s -> s.contains("dystopia"))) {
+      if (exists) {
+        Path configCopy = file.resolveSibling(String.format("%s_copy", fileName));
+        Files.copy(file, configCopy, StandardCopyOption.REPLACE_EXISTING);
+      }
+      operation.perform(file);
+    }
+  }
+
+  private interface FileOperation {
+    void perform(Path path) throws IOException;
   }
 }

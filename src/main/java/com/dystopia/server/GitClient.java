@@ -22,7 +22,7 @@ public class GitClient {
             TaskDefinition task = ArgumentsParser.parse(args);
             task.executor().execute();
         } catch (IllegalArgumentException e) {
-            LOGGER.log(Level.SEVERE, "Exception occurred while parsing arguments: %s", e.toString());
+            LOGGER.log(Level.SEVERE, e, e::getMessage);
         }
     }
 }
