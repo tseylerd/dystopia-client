@@ -3,6 +3,8 @@ package com.dystopia.server;
 import com.dystopia.definition.TaskDefinition;
 import com.dystopia.executor.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,12 +20,12 @@ class ArgumentsParser {
 
     }
 
-    static TaskDefinition parse(String[] args) throws IllegalArgumentException {
+    static TaskDefinition parse(String[] args) throws IllegalArgumentException, UnsupportedEncodingException {
         if (args.length < 2) {
             throw new IllegalArgumentException(USAGE);
         }
 
-        Path path = Paths.get(args[FILE]);
+        Path path = Paths.get(URLDecoder.decode(args[FILE], "UTF-8"));
         if (!Files.isRegularFile(path)) {
             throw new IllegalArgumentException("File " + args[FILE] + " does not exists");
         }

@@ -5,8 +5,10 @@ import com.dystopia.definition.TaskDefinition;
 import com.dystopia.git.GitUtil;
 import com.dystopia.server.GitClient;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.*;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,13 +30,15 @@ public class StartTask implements TaskExecutor, TaskDefinition {
       copyAndModify(gitDirectory, "config", path -> {
         Path currentJarPath = Util.getContainingPath();
         Path driverRunnerPath = currentJarPath.resolveSibling("run-driver.sh");
+        GitClient.LOGGER.severe(driverRunnerPath.toString());
+        GitClient.LOGGER.severe(new File(driverRunnerPath.toUri()).getAbsolutePath());
         Files.write(
           path,
           Arrays.asList(
             "",
             "[merge \"dystopia\"]",
             "\tname = dystopia",
-            "\tdriver = /bin/sh '" + driverRunnerPath.toFile().getPath() + "' %O %A %B"
+            "\tdriver = /bin/sh '" + URLDecoder.decode(driverRunnerPath.toFile().getPath(), "UTF-8") + "' %O %A %B"
           ),
           StandardOpenOption.APPEND,
           StandardOpenOption.CREATE,
@@ -42,19 +46,17 @@ public class StartTask implements TaskExecutor, TaskDefinition {
         );
       });
 
-      copyAndModify(file, ".gitattributes", path -> {
-        Files.write(
-          path,
-          Collections.singletonList("*.sketch merge=dystopia"),
-          StandardOpenOption.APPEND,
-          StandardOpenOption.CREATE,
-          StandardOpenOption.WRITE
-        );
-      });
+      copyAndModify(file.getParent(), ".gitattributes", path -> Files.write(
+        path,
+        Collections.singletonList("*.sketch merge=dystopia"),
+        StandardOpenOption.APPEND,
+        StandardOpenOption.CREATE,
+        StandardOpenOption.WRITE
+      ));
 
       GitUtil.executeUnderPathOrExit(file, "add", file.toAbsolutePath().toString());
     } catch (IOException | InterruptedException e) {
-      GitClient.LOGGER.log(Level.SEVERE, "Exception occurred while initializing the git client: %s", e.toString());
+      GitClient.LOGGER.log(Level.SEVERE, e, e::getMessage);
     }
   }
 
@@ -69,8 +71,8 @@ public class StartTask implements TaskExecutor, TaskDefinition {
     List<String> strings = exists ? Files.readAllLines(file) : Collections.emptyList();
     if (strings.stream().noneMatch(s -> s.contains("dystopia"))) {
       if (exists) {
-        Path configCopy = file.resolveSibling(String.format("%s_copy", fileName));
-        Files.copy(file, configCopy, StandardCopyOption.REPLACE_EXISTING);
+        Path copy = file.resolveSibling(String.format("%s_copy", fileName));
+        Files.copy(file, copy, StandardCopyOption.REPLACE_EXISTING);
       }
       operation.perform(file);
     }

@@ -38,5 +38,6 @@ public class StopTask implements TaskExecutor, TaskDefinition {
         Path resolved = path.resolve(fileName + "_copy");
         if (!Files.exists(resolved)) return;
         Files.move(resolved, Paths.get(fileName), StandardCopyOption.REPLACE_EXISTING);
+        Files.delete(resolved);
     }
 }

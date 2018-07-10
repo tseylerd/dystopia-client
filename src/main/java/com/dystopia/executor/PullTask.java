@@ -19,6 +19,8 @@ public class PullTask implements TaskExecutor, TaskDefinition {
     public void execute() {
         GitUtil.ensureUnderGit(file);
         try {
+            GitUtil.executeUnderPathOrExit(file, "add", file.toAbsolutePath().toString());
+            GitUtil.executeUnderPathOrExit(file, "commit", "-m", "temporary commit");
             GitClient.LOGGER.log(Level.SEVERE, "fetching");
             GitUtil.executeUnderPathOrExit(file, "fetch");
             GitClient.LOGGER.log(Level.SEVERE, "merging");

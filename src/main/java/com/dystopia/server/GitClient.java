@@ -4,6 +4,7 @@ import com.dystopia.definition.TaskDefinition;
 import com.dystopia.executor.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -21,7 +22,7 @@ public class GitClient {
             }
             TaskDefinition task = ArgumentsParser.parse(args);
             task.executor().execute();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | UnsupportedEncodingException e) {
             LOGGER.log(Level.SEVERE, e, e::getMessage);
         }
     }
