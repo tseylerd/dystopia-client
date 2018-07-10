@@ -4,7 +4,6 @@ import com.dystopia.definition.TaskDefinition;
 import com.dystopia.git.GitUtil;
 import com.dystopia.server.GitClient;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Level;
 
@@ -30,10 +29,9 @@ public class PushTask implements TaskExecutor, TaskDefinition {
             GitClient.LOGGER.log(Level.SEVERE, "commiting");
             GitUtil.executeUnderPathOrExit(file, "commit", "-m", commitMessage);
             GitClient.LOGGER.log(Level.SEVERE, "pushing");
-            GitUtil.executeUnderPathOrExit(file, "push", "origin", "sketch_branch:master");
+            GitUtil.executeUnderPathOrExit(file, "push");
         } catch (Throwable e) {
-            GitClient.LOGGER.log(Level.SEVERE, "Exception occurred while pushing " + file.getFileName() + ": %s", e.toString());
-            GitClient.LOGGER.log(Level.SEVERE, e.getMessage());
+            GitClient.LOGGER.log(Level.SEVERE, e, e::getMessage);
         }
     }
 
