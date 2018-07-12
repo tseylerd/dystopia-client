@@ -25,7 +25,7 @@ public class StopTask implements TaskExecutor, TaskDefinition {
             restore(file.resolveSibling(".git"), "config");
             restore(file, ".gitattributes");
         } catch (IOException e) {
-            GitClient.LOGGER.log(Level.SEVERE, "Exception occurred while finalizing the git client: %s", e.toString());
+            GitClient.LOGGER.log(Level.SEVERE, e, e::getMessage);
         }
     }
 
