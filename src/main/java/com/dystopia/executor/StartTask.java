@@ -7,13 +7,11 @@ import com.dystopia.server.GitClient;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 
 public class StartTask implements TaskExecutor, TaskDefinition {
@@ -54,7 +52,7 @@ public class StartTask implements TaskExecutor, TaskDefinition {
         StandardOpenOption.WRITE
       ));
 
-      GitUtil.executeUnderPathOrExit(file, "add", file.toAbsolutePath().toString());
+      GitUtil.execute(file.getParent(), "add", file.toAbsolutePath().toString());
     } catch (IOException | InterruptedException e) {
       GitClient.LOGGER.log(Level.SEVERE, e, e::getMessage);
     }

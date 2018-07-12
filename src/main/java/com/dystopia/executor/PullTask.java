@@ -4,7 +4,6 @@ import com.dystopia.definition.TaskDefinition;
 import com.dystopia.git.GitUtil;
 import com.dystopia.server.GitClient;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Level;
 
@@ -19,12 +18,12 @@ public class PullTask implements TaskExecutor, TaskDefinition {
     public void execute() {
         GitUtil.ensureUnderGit(file);
         try {
-            GitUtil.executeUnderPathOrExit(file, "add", file.toAbsolutePath().toString());
-            GitUtil.executeUnderPathOrExit(file, "commit", "-m", "temporary commit");
+            GitUtil.execute(file.getParent(), "add", file.toAbsolutePath().toString());
+            GitUtil.execute(file.getParent(), "commit", "-m", "temporary commit");
             GitClient.LOGGER.log(Level.SEVERE, "fetching");
-            GitUtil.executeUnderPathOrExit(file, "fetch");
+            GitUtil.execute(file.getParent(), "fetch");
             GitClient.LOGGER.log(Level.SEVERE, "merging");
-            GitUtil.executeUnderPathOrExit(file, "merge");
+            GitUtil.execute(file.getParent(), "merge");
         } catch (Throwable e) {
             GitClient.LOGGER.log(Level.SEVERE, "Exception occurred while pulling from origin/master: %s", e.toString());
             GitClient.LOGGER.log(Level.SEVERE, e.getMessage());

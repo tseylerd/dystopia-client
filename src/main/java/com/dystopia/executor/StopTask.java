@@ -36,7 +36,10 @@ public class StopTask implements TaskExecutor, TaskDefinition {
 
     private void restore(Path path, String fileName) throws IOException {
         Path resolved = path.resolve(fileName + "_copy");
-        if (!Files.exists(resolved)) return;
+        if (!Files.exists(resolved)) {
+            Files.delete(Paths.get(fileName));
+            return;
+        }
         Files.move(resolved, Paths.get(fileName), StandardCopyOption.REPLACE_EXISTING);
         Files.delete(resolved);
     }

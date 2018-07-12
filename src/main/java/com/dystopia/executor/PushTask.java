@@ -23,13 +23,13 @@ public class PushTask implements TaskExecutor, TaskDefinition {
         GitUtil.ensureUnderGit(file);
         try {
             GitClient.LOGGER.log(Level.SEVERE, "fetching");
-            GitUtil.executeUnderPathOrExit(file, "fetch");
+            GitUtil.execute(file.getParent(), "fetch");
             GitClient.LOGGER.log(Level.SEVERE, "adding");
-            GitUtil.executeUnderPathOrExit(file, "add", file.toAbsolutePath().toString());
+            GitUtil.execute(file.getParent(), "add", file.toAbsolutePath().toString());
             GitClient.LOGGER.log(Level.SEVERE, "commiting");
-            GitUtil.executeUnderPathOrExit(file, "commit", "-m", commitMessage);
+            GitUtil.execute(file.getParent(), "commit", "-m", commitMessage);
             GitClient.LOGGER.log(Level.SEVERE, "pushing");
-            GitUtil.executeUnderPathOrExit(file, "push");
+            GitUtil.execute(file.getParent(), "push");
         } catch (Throwable e) {
             GitClient.LOGGER.log(Level.SEVERE, e, e::getMessage);
         }
